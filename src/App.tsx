@@ -1,8 +1,6 @@
-import { useEffect, useState, useRef } from 'react'
+import { useEffect, useState } from 'react'
 import heroImg from './assets/logoTemp.jpg'
-import bgMusic from './assets/Pachavellam.mp3'
 import './App.css'
-import Layer1 from './components/Layer1.tsx'
 
 function App() {
   const [date] = useState(new Date('2026-06-28'))
@@ -12,50 +10,9 @@ function App() {
     minutes: 0,
     seconds: 0
   })
-  const [isMuted, setIsMuted] = useState(false)
-  const audioRef = useRef<HTMLAudioElement>(null)
 
-  // Autoplay on mount — browsers require muted for guaranteed autoplay,
-  // so we start muted, then immediately unmute. If the browser blocks it
-  // entirely, wait for click, scroll, or touch to start playback.
-  useEffect(() => {
-    const audio = audioRef.current
-    if (!audio) return
-
-    const unlock = () => {
-      audio.muted = false
-      audio.play().then(() => {
-        setIsMuted(false)
-        document.removeEventListener('click', unlock)
-        document.removeEventListener('touchstart', unlock)
-        window.removeEventListener('scroll', unlock)
-      }).catch(() => {
-        audio.muted = true
-      })
-    }
-
-    audio.muted = true
-    const playPromise = audio.play()
-
-    if (playPromise !== undefined) {
-      playPromise
-        .then(() => {
-          audio.muted = false
-          setIsMuted(false)
-        })
-        .catch(() => {
-          document.addEventListener('click', unlock)
-          document.addEventListener('touchstart', unlock)
-          window.addEventListener('scroll', unlock)
-        })
-    }
-
-    return () => {
-      document.removeEventListener('click', unlock)
-      document.removeEventListener('touchstart', unlock)
-      window.removeEventListener('scroll', unlock)
-    }
-  }, [])
+ 
+ 
 
   useEffect(() => {
     const calculateTimeLeft = () => {
@@ -74,15 +31,7 @@ function App() {
     return () => clearInterval(timer)
   }, [date])
 
-  const toggleMute = () => {
-    if (audioRef.current) {
-      if (audioRef.current.paused) {
-        audioRef.current.play().catch(console.error)
-      }
-      audioRef.current.muted = !audioRef.current.muted
-      setIsMuted(audioRef.current.muted)
-    }
-  }
+ 
 
   const formatTime = (value: number) => String(value).padStart(2, '0')
 
@@ -95,9 +44,6 @@ function App() {
 
   return (
     <div>
-      <audio ref={audioRef} loop>
-        <source src={bgMusic} type="audio/mpeg" />
-      </audio>
 
       <div className="inv-wrap">
   <div className="ornament">— ✦ —</div>
@@ -135,14 +81,6 @@ function App() {
 </div>
 
 
-      {/* Mute toggle — fixed top-right */}
-    {/*   <button
-        onClick={toggleMute}
-        className="mute-button"
-        aria-label={isMuted ? 'Unmute music' : 'Mute music'}
-      >
-        {isMuted ? '🔇' : '🔊'}
-      </button> */}
 
       <section className="center-section">
         {/* Hero image with glow ring */}
